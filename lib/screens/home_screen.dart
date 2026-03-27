@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import '../widgets/hme_feed.dart';
+import '../widgets/home_feed.dart';
+import 'content_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,63 +15,101 @@ class _HomeScreenState extends State<HomeScreen> {
     return DefaultTabController(
       length: 3,
       child: Scaffold(
-        body: CustomScrollView(
-          slivers: [
-            SliverAppBar(
-              title: const Text('Home'),
-              centerTitle: true,
-              bottom: TabBar(
-                tabs: [
-                  Tab(text: 'Latest'),
-                  Tab(text: 'Popular'),
-                  Tab(text: 'Top Rated'),
-                ],
+        body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              // 1. The Pinned App Bar with Tabs
+              SliverOverlapAbsorber(
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                  context,
+                ),
+                sliver: SliverAppBar(
+                  title: const Text('Noir'),
+                  centerTitle: true,
+                  pinned: true,
+                  floating: true,
+                  forceElevated: innerBoxIsScrolled,
+                  bottom: const TabBar(
+                    tabs: [
+                      Tab(text: 'Latest'),
+                      Tab(text: 'Popular'),
+                      Tab(text: 'Top Rated'),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            SliverToBoxAdapter(
-              child: HmeFeed(movies:
-                <Map<String, dynamic>> [
-                  {
-                    "title": 'The Shawshank Redemption',
-                    "year": 1994,
-                    "rating": 9.3,
-                    "description":
-                    'Two imprisoned men bond over a number of years, finding solace and eventual redemption through acts of common decency.',
-                    "genre": 'Drama',
-                    "poster": 'https://picsum.photos/250/300',
+              // 2. The Carousel Header
+              const SliverToBoxAdapter(child: HomeFeed()),
+            ];
+          },
+          body: const TabBarView(
+            children: [
+              // Latest movies
+              _TabContentWrapper(
+                child: ContentScreen(
+                  params: {
+                    'sort_by': 'release_date.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                    'with_original_language': 'en',
+                    'with_genres': '28,12,16',
+                    'popularity.gte': '100',
+                    'vote_count.gte': '500',
                   },
-                  {
-                    "title": 'The Godfather',
-                    "year": 1972,
-                    "rating": 9.2,
-                    "description":
-                    'The aging patriarch of an organized crime dynasty transfers control of his clandestine empire to his reluctant son.',
-                    "genre": 'Crime, Drama',
-                    "poster": 'https://picsum.photos/250/300',
-                  },
-                  {
-                    "title": 'The Dark Knight',
-                    "year": 2008,
-                    "rating": 9.0,
-                    "description":
-                    'When the menace known as the Joker wreaks havoc and chaos on the people of Gotham, Batman must accept one',
-                    "genre": 'Action, Crime, Drama',
-                    "poster": 'https://picsum.photos/250/300',
-                  },
-                ],),
-            ),
-            SliverFillRemaining(
-              child: TabBarView(
-                children: [
-                  Center(child: Text('Latest')),
-                  Center(child: Text('Popular')),
-                  Center(child: Text('Top Rated')),
-                ],
+                  type: 'movie',
+                ),
               ),
-            ),
-          ],
+              // Popular movies
+              _TabContentWrapper(
+                child: ContentScreen(
+                  params: {
+                    'sort_by': 'popularity.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                    'with_original_language': 'en',
+                  },
+                  type: 'movie',
+                ),
+              ),
+              // Top Rated movies
+              _TabContentWrapper(
+                child: ContentScreen(
+                  params: {
+                    'vote_average.gte': '7',
+                    'vote_count.gte': '100',
+                    'sort_by': 'release_date.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                  },
+                  type: 'movie',
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+    );
+  }
+}
+
+// Wrapper to handle the overlap injector for correct scrolling offset
+class _TabContentWrapper extends StatelessWidget {
+  final Widget child;
+  const _TabContentWrapper({required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (BuildContext context) {
+        return CustomScrollView(
+          slivers: <Widget>[
+            SliverOverlapInjector(
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+            ),
+            SliverFillRemaining(child: child),
+          ],
+        );
+      },
     );
   }
 }

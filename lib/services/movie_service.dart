@@ -1,27 +1,52 @@
 import 'dart:convert';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import '../models/movie_model.dart';
 
 class MovieService {
-  static const String url = "http://www.omdbapi.com/?t=inception&apikey=622cae01";
+  static const String _baseUrl = 'https://api.themoviedb.org/3';
+  static final String _apiKey = dotenv.env['API_KEY']!;
 
-  Future<_Result<MovieModel>> fetchMovie() async {
-    final response = await http.get(Uri.parse(url));
+  //   get movies
 
-    if(response.statusCode != 200) {
-      return _Result.failure("Error: ${response.statusCode}");
+  Future<List<Movie>> fetchMovie(Map<String, String> params) async {
+    final uri = Uri.https('api.themoviedb.org', '/3/discover/movie', {
+      "api_key": _apiKey,
+      "include_adult": "false",
+      ...params,
+    });
+
+    final response = await http.get(uri);
+    final data = json.decode(response.body);
+    final movieResponse = MovieWrapper.fromJson(data);
+    final movies = movieResponse.movies;
+
+
+    if (response.statusCode == 200) {
+      return movies;
+    } else {
+      throw Exception('${response.statusCode}:Failed to load movies');
     }
-
-    final movie = MovieModel.fromJson(json.decode(response.body));
-    return _Result.success(movie);
   }
 }
 
-class _Result<T> {
-  final T? data;
-  final String? error;
+//Wrapper class
+class MovieWrapper{
+  final List<Movie> movies;
+  final int page;
 
-  _Result.success(this.data) : error = null;
-  _Result.failure(this.error) : data = null;
+  MovieWrapper({required this.movies,required this.page});
+
+  factory MovieWrapper.fromJson(Map<String, dynamic> json){
+    return MovieWrapper(
+      page: json['page'],
+      // Convert list of JSON → list of Movie objects
+      movies: (json['results'] as List)
+          .map((movieJson) => Movie.fromJson(movieJson))
+          .toList(),
+    );
+  }
+
+
 }

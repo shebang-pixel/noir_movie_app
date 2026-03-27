@@ -1,51 +1,47 @@
-// {
-// "Title": "Inception",
-// "Year": "2010",
-// "Rated": "PG-13",
-// "Released": "16 Jul 2010",
-// "Runtime": "148 min",
-// "Genre": "Action, Adventure, Sci-Fi",
-// "Director": "Christopher Nolan",
-// "Writer": "Christopher Nolan",
-// "Actors": "Leonardo DiCaprio, Joseph Gordon-Levitt, Elliot Page",
-// "Plot": "A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a CEO, but his tragic past may doom the project and his team to disaster.",
-// "Language": "English, Japanese, French",
-// "Country": "United States, United Kingdom",
-// "Awards": "Won 4 Oscars. 160 wins & 220 nominations total",
-// "Poster": "https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg",
-// "imdbRating": "8.8",
-// }
-
-class MovieModel {
-  const MovieModel({
-    required this.title,
-    required this.released,
-    required this.genre,
-    required this.country,
-    required this.rating,
-    required this.plot,
-    required this.run_time,
-    required this.poster_url,
-});
+class Movie {
+  final int id;
   final String title;
-  final String released;
-  final String run_time;
-  final String genre;
-  final String country;
-  final String poster_url;
-  final String rating;
-  final String plot;
+  final String overview;
+  final double rating;
+  final String posterPath;
+  final String backdropPath;
+  final String releaseDate;
+  final List<int> genreIds;
+  final bool adult;
+  final bool video;
+  final double popularity;
+  final int voteCount;
 
-  factory MovieModel.fromJson(Map<String, dynamic> json) {
-    return MovieModel(
-        title: json['Title'],
-        released: json['Released'],
-        genre: json['Genre'],
-        country: json['Country'],
-        rating: json['imdbRating'],
-        plot: json['Plot'],
-        run_time: json['Runtime'],
-        poster_url: json['Poster']
+  Movie({
+    required this.id,
+    required this.title,
+    required this.overview,
+    required this.rating,
+    required this.posterPath,
+    required this.backdropPath,
+    required this.releaseDate,
+    required this.genreIds,
+    required this.adult,
+    required this.video,
+    required this.popularity,
+    required this.voteCount,
+  });
+
+  /// Convert JSON → Movie object
+  factory Movie.fromJson(Map<String, dynamic> json) {
+    return Movie(
+      id: json['id'] ?? 0,
+      title: json['title'] ?? 'No title',
+      overview: json['overview'] ?? '',
+      rating: (json['vote_average'] ?? 0).toDouble(),
+      posterPath: json['poster_path'] ?? '',
+      backdropPath: json['backdrop_path'] ?? '',
+      releaseDate: json['release_date'] ?? '',
+      genreIds: List<int>.from(json['genre_ids'] ?? []),
+      adult: json['adult'] ?? false,
+      video: json['video'] ?? false,
+      popularity: (json['popularity'] ?? 0).toDouble(),
+      voteCount: json['vote_count'] ?? 0,
     );
   }
 }

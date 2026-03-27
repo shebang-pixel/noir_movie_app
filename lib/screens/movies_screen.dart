@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'content_screen.dart';
 
 class MoviesScreen extends StatefulWidget {
   const MoviesScreen({super.key});
@@ -29,9 +30,32 @@ class _MoviesScreenState extends State<MoviesScreen> {
             SliverFillRemaining(
               child: TabBarView(
                 children: [
-                  Center(child: Text('Latest')),
-                  Center(child: Text('Popular')),
-                  Center(child: Text('Top Rated')),
+                  // 1. Latest movie Screen
+                  ContentScreen(params: {
+                    'sort_by': 'release_date.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                    'with_original_language': 'en',
+                    'with_genres': '28,12,16',
+                    'popularity.gte': '100',
+                    'vote_count.gte': '500'
+                  }, type: 'movie'),
+
+                  // 2. Popular movie Screen
+                  ContentScreen(params: {
+                    'sort_by': 'popularity.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                    'with_original_language': 'en',
+                  }, type: 'movie'),
+                  // 3. Top Rated movie Screen
+                  ContentScreen(params: {
+                    'vote_average.gte': '8',
+                    'vote_count.gte': '100',
+                    'sort_by': 'release_date.desc',
+                    'page': '1',
+                    'include_adult': 'false',
+                  }, type: 'movie'),
                 ]
               )
             )
