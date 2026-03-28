@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../widgets/home_feed.dart';
 import 'content_screen.dart';
+import 'search_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,10 +26,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 sliver: SliverAppBar(
                   title: const Text('Noir'),
+                 
                   centerTitle: true,
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
+                  actions: [
+                    IconButton(icon: const Icon(Icons.search), onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SearchScreen()),
+                      );
+              }),
+
+                  ],
                   bottom: const TabBar(
                     tabs: [
                       Tab(text: 'Latest'),

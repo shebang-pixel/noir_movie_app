@@ -16,6 +16,8 @@ class MovieInfoScreen extends StatelessWidget {
           // 1. Collapsing Image Header
           SliverAppBar(
             expandedHeight: 300,
+            iconTheme: const IconThemeData(color: Colors.white),
+            backgroundColor: Colors.black54,
             pinned: true,
             title: Text(movie.title),
             flexibleSpace: FlexibleSpaceBar(

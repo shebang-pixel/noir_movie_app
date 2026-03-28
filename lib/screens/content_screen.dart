@@ -4,13 +4,24 @@ import '../models/movie_model.dart';
 import '../widgets/movie_card.dart';
 
 class ContentScreen extends StatefulWidget {
-  final Map<String, String> params;
-  final String type;
+  // Data fields required
+  final Map<String, String>? params;
+  final String? type;
+  final List<Movie>? movies;
+
+  // 1.Gets raw data from the API
   const ContentScreen({
     super.key,
     required this.params,
     required this.type,
-  });
+  }) : movies = null;
+
+  //  2.Gets data from existing
+  const ContentScreen.fromList({
+    super.key,
+    required this.movies,
+  })  : params = null,
+        type = null;
 
   @override
   State<StatefulWidget> createState() => _ContentScreenState();
@@ -22,11 +33,13 @@ class _ContentScreenState extends State<ContentScreen> {
   @override
   void initState() {
     super.initState();
-    // Fetching movies with release date descending to get "Latest"
-    _moviesFuture = MovieService().fetchMovie(
-      widget.type,
-      widget.params,
-    );
+    if(widget.movies != null){
+      // data is ready
+      _moviesFuture = Future.value(widget.movies);
+    } else {
+      // fetch from api
+      _moviesFuture = MovieService().fetchMovie(widget.type!, widget.params!);
+    }
   }
 
   @override
