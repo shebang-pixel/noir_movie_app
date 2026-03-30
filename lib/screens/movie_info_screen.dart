@@ -5,6 +5,8 @@ class MovieInfoScreen extends StatelessWidget {
   final Movie movie;
   const MovieInfoScreen({super.key, required this.movie});
 
+  // TODO: add a button that adds item to watchlist
+
   @override
   Widget build(BuildContext context) {
     const String imageUrl = 'https://image.tmdb.org/t/p/w500';
