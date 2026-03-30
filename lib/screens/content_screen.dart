@@ -4,7 +4,7 @@ import '../models/movie_model.dart';
 import '../widgets/movie_card.dart';
 
 class ContentScreen extends StatefulWidget {
-  // Data fields required
+  // Data fields
   final Map<String, String>? params;
   final String? type;
   final List<Movie>? movies;
