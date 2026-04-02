@@ -15,7 +15,7 @@ class WatchList extends StatefulWidget {
 class _WatchListState extends State<WatchList> {
   // get series list from local storage
   Future<List<Movie>> getItems(String contentType) async {
-    List<Movie> movies = [];
+
     // access resource
     final prefs = await SharedPreferences.getInstance();
     final key = contentType == 'movie' ? 'watchList' : 'tvWatchList';
@@ -24,10 +24,12 @@ class _WatchListState extends State<WatchList> {
     final idList = prefs.getStringList(key) ?? [];
 
     //   fetch by id
-    for (var id in idList) {
-      final movie = await MovieService().fetchById(contentType, id);
-      movies.add(movie);
-    }
+    // parallel fetching
+    final List<Future<Movie>> fetchFutures = idList.map((id) =>
+        MovieService().fetchById(contentType, id)
+    ).toList();
+
+    final List<Movie> movies = await Future.wait(fetchFutures);
 
     return movies;
   }
