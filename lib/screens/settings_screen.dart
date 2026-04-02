@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
-// import '../widgets/home_feed.dart';
 
-class SettingsScreen extends StatefulWidget{
-  const SettingsScreen({super.key});
+class SettingsScreen extends StatelessWidget {
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
 
-  @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
+  const SettingsScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
-class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,8 +17,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
         title: const Text('Settings'),
         centerTitle: true,
       ),
-      body: Center(child: Text('Settings')),
+      body: ListView(
+        children: [
+          SwitchListTile(
+            title: const Text('Dark Mode'),
+            subtitle: const Text('Toggle the app theme'),
+            value: isDarkMode,
+            onChanged: (bool value) {
+              onThemeChanged(value);
+            },
+            secondary: Icon(
+              isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            ),
+          ),
+          const Divider(),
+          const ListTile(
+            leading: Icon(Icons.info_outline),
+            title: Text('About Noir'),
+            subtitle: Text('Version 0.1.0'),
+          ),
+        ],
+      ),
     );
   }
-
 }

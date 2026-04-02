@@ -2,9 +2,17 @@ import 'package:flutter/material.dart';
 import '../widgets/home_feed.dart';
 import 'content_screen.dart';
 import 'search_screen.dart';
+import 'settings_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final bool isDarkMode;
+  final Function(bool) onThemeChanged;
+
+  const HomeScreen({
+    super.key,
+    required this.isDarkMode,
+    required this.onThemeChanged,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -19,26 +27,38 @@ class _HomeScreenState extends State<HomeScreen> {
         body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool innerBoxIsScrolled) {
             return <Widget>[
-              // 1. The Pinned App Bar with Tabs
               SliverOverlapAbsorber(
-                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                  context,
-                ),
+                handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
                 sliver: SliverAppBar(
                   title: const Text('Noir'),
-                 
                   centerTitle: true,
                   pinned: true,
                   floating: true,
                   forceElevated: innerBoxIsScrolled,
                   actions: [
-                    IconButton(icon: const Icon(Icons.search), onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const SearchScreen()),
-                      );
-              }),
-
+                    IconButton(
+                      icon: const Icon(Icons.search),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const SearchScreen()),
+                        );
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.settings),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SettingsScreen(
+                              isDarkMode: widget.isDarkMode,
+                              onThemeChanged: widget.onThemeChanged,
+                            ),
+                          ),
+                        );
+                      },
+                    )
                   ],
                   bottom: const TabBar(
                     tabs: [
@@ -49,13 +69,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              // 2. The Carousel Header
               const SliverToBoxAdapter(child: HomeFeed()),
             ];
           },
           body: const TabBarView(
             children: [
-              // Latest movies
               _TabContentWrapper(
                 child: ContentScreen(
                   params: {
@@ -70,7 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   type: 'movie',
                 ),
               ),
-              // Popular movies
               _TabContentWrapper(
                 child: ContentScreen(
                   params: {
@@ -82,7 +99,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   type: 'movie',
                 ),
               ),
-              // Top Rated movies
               _TabContentWrapper(
                 child: ContentScreen(
                   params: {
@@ -103,7 +119,6 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 }
 
-// Wrapper to handle the overlap injector for correct scrolling offset
 class _TabContentWrapper extends StatelessWidget {
   final Widget child;
   const _TabContentWrapper({required this.child});

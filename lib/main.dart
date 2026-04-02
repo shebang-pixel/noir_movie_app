@@ -7,14 +7,36 @@ Future<void> main() async {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  // store
+  bool isDarkMode = false;
+
+  // fuuction to toggle
+  void toggleTheme(bool value) {
+    setState(() {
+      isDarkMode = value;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: MainScreen(),
+      title: 'Noir Movie App',
+      // define themes
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
+      // toggle theme
+      themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+      home: MainScreen(isDarkMode: isDarkMode, onThemeChanged: toggleTheme),
     );
   }
+
 }
