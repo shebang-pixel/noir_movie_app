@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/movie_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../widgets/movie_card.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MovieInfoScreen extends StatefulWidget {
   final Movie movie;
@@ -35,7 +35,9 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
   /// Add movie/series to SharedPreferences watchlist
   Future<void> addToWatchList() async {
     final prefs = await SharedPreferences.getInstance();
-    final key = widget.movie.contentType == 'movie' ? 'watchList' : 'tvWatchList';
+    final key = widget.movie.contentType == 'movie'
+        ? 'watchList'
+        : 'tvWatchList';
 
     List<String> list = prefs.getStringList(key) ?? [];
 
@@ -84,10 +86,19 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Image.network(
-                    widget.movie.backdropPath.isNotEmpty
+                  // Image.network(
+                  //   widget.movie.backdropPath.isNotEmpty
+                  //       ? '$backdropUrl${widget.movie.backdropPath}'
+                  //       : '$imageUrl${widget.movie.posterPath}',
+                  //   fit: BoxFit.cover,
+                  // )
+                  CachedNetworkImage(
+                    imageUrl: widget.movie.backdropPath.isNotEmpty
                         ? '$backdropUrl${widget.movie.backdropPath}'
                         : '$imageUrl${widget.movie.posterPath}',
+                    placeholder: (context, url) =>
+                        Container(color: Colors.grey[900]),
+                    errorWidget: (context, url, error) => Icon(Icons.error),
                     fit: BoxFit.cover,
                   ),
                   const DecoratedBox(
@@ -114,9 +125,7 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
                   children: [
                     Text(
                       widget.movie.title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineMedium
+                      style: Theme.of(context).textTheme.headlineMedium
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 12),
@@ -128,13 +137,15 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
                         const SizedBox(width: 4),
                         Text(
                           widget.movie.rating.toStringAsFixed(1),
-                          style: Theme.of(context)
-                              .textTheme
-                              .titleMedium
+                          style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(width: 16),
-                        const Icon(Icons.calendar_month, color: Colors.grey, size: 20),
+                        const Icon(
+                          Icons.calendar_month,
+                          color: Colors.grey,
+                          size: 20,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           widget.movie.releaseDate,
@@ -147,7 +158,9 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
                         ElevatedButton(
                           onPressed: isInWatchList ? null : addToWatchList,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: isInWatchList ? Colors.grey : Colors.blue,
+                            backgroundColor: isInWatchList
+                                ? Colors.grey
+                                : Colors.blue,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                             ),
@@ -167,26 +180,33 @@ class _MovieInfoScreenState extends State<MovieInfoScreen> {
 
                     Text(
                       'Overview',
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
+                      style: Theme.of(context).textTheme.headlineSmall
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 8),
                     Text(
                       widget.movie.overview,
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyLarge
-                          ?.copyWith(height: 1.5),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.bodyLarge?.copyWith(height: 1.5),
                     ),
                     const SizedBox(height: 24),
 
-                    _buildInfoTile(Icons.trending_up, 'Popularity',
-                        widget.movie.popularity.toString()),
                     _buildInfoTile(
-                        Icons.how_to_vote, 'Vote Count', widget.movie.voteCount.toString()),
-                    _buildInfoTile(Icons.fingerprint, 'Movie ID', widget.movie.id.toString()),
+                      Icons.trending_up,
+                      'Popularity',
+                      widget.movie.popularity.toString(),
+                    ),
+                    _buildInfoTile(
+                      Icons.how_to_vote,
+                      'Vote Count',
+                      widget.movie.voteCount.toString(),
+                    ),
+                    _buildInfoTile(
+                      Icons.fingerprint,
+                      'Movie ID',
+                      widget.movie.id.toString(),
+                    ),
 
                     if (widget.movie.adult)
                       Container(

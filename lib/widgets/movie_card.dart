@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/movie_model.dart';
 import '../screens/movie_info_screen.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
@@ -11,7 +12,7 @@ class MovieCard extends StatelessWidget {
     // TMDB poster base URL
     const String imageUrl = 'https://image.tmdb.org/t/p/w500';
 
-    void onCardTap () {
+    void onCardTap() {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => MovieInfoScreen(movie: movie)),
@@ -25,14 +26,22 @@ class MovieCard extends StatelessWidget {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            Image.network(
-              movie.posterPath.isNotEmpty
+            // Image.network(
+            //   movie.posterPath.isNotEmpty
+            //       ? '$imageUrl${movie.posterPath}'
+            //       : 'https://via.placeholder.com/500x750?text=No+Image',
+            //   fit: BoxFit.cover,
+            //   errorBuilder: (context, error, stackTrace) => const Center(
+            //     child: Icon(Icons.broken_image, color: Colors.white, size: 40),
+            //   ),
+            // )
+            CachedNetworkImage(
+              imageUrl: movie.posterPath.isNotEmpty
                   ? '$imageUrl${movie.posterPath}'
                   : 'https://via.placeholder.com/500x750?text=No+Image',
+              placeholder: (context, url) => Container(color: Colors.grey[900]),
+              errorWidget: (context, url, error) => Icon(Icons.error),
               fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => const Center(
-                child: Icon(Icons.broken_image, color: Colors.white, size: 40),
-              ),
             ),
             // Gradient Overlay for text readability
             Positioned.fill(
@@ -41,7 +50,10 @@ class MovieCard extends StatelessWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [Colors.transparent, Colors.black.withValues(alpha: 0.8)],
+                    colors: [
+                      Colors.transparent,
+                      Colors.black.withValues(alpha: 0.8),
+                    ],
                     stops: const [0.6, 1.0],
                   ),
                 ),
@@ -61,9 +73,13 @@ class MovieCard extends StatelessWidget {
                     const Icon(Icons.star, color: Colors.amber, size: 16),
                     const SizedBox(width: 4),
                     Text(
-                      movie.rating.toStringAsFixed(1), // Fixed: use instance 'movie'
+                      movie.rating.toStringAsFixed(
+                        1,
+                      ), // Fixed: use instance 'movie'
                       style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold),
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ],
                 ),
@@ -97,7 +113,7 @@ class MovieCard extends StatelessWidget {
             ),
           ],
         ),
-      )
+      ),
     );
   }
 }
