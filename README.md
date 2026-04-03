@@ -3,6 +3,15 @@
 ## Overview
 Noir Movie App is an innovative application designed to provide users access to a comprehensive database of film and television data, utilizing the TMDB API for fetching movie details.
 
+## Screenshots
+![Home Screen](assets/screenshots/homescreen.png)
+![Movie Screen](assets/screenshots/moviescreen.png)
+![TV Screen](assets/screenshots/tvscreen.png)
+![Watchlist Screen](assets/screenshots/watchlistscreen.png)
+![Search Screen](assets/screenshots/searchscreen.png)
+![Settings Screen](assets/screenshots/settingsscreen.png)
+
+
 ## Features
 - Browse movies by genre
 - Search for movies by title
