@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
@@ -7,30 +8,31 @@ class MovieService {
   static const String _baseUrl = 'https://api.themoviedb.org/3';
   static final String _apiKey = dotenv.env['API_KEY']!;
 
-  /// Fetches movies from the API by ID
+  /// Fetches content by ID with a 30-second timeout
   Future<Movie> fetchById(String type, String id) async {
-    // Build the URL for TMDB's /movie/{id} or /tv/{id} endpoint
     final uri = Uri.https(
       'api.themoviedb.org',
-      '/3/$type/$id', // type = 'movie' or 'tv'
-      {
-        'api_key': _apiKey,
-        'language': 'en-US', // optional
-      },
+      '/3/$type/$id',
+      {'api_key': _apiKey, 'language': 'en-US'},
     );
 
-    final response = await http.get(uri);
+    try {
+      final response = await http.get(uri).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw TimeoutException('Connection timed out'),
+      );
 
-    if (response.statusCode != 200) {
-      // Throw error for proper handling
-      throw Exception('Failed to fetch $type with ID $id');
+      if (response.statusCode == 200) {
+        return Movie.fromJson(json.decode(response.body));
+      } else {
+        throw Exception('Failed to load $type');
+      }
+    } catch (e) {
+      rethrow;
     }
-
-    // Convert the response JSON into a Movie object
-    return Movie.fromJson(json.decode(response.body));
   }
 
-  /// Uses '/search' if 'query' is present in params, otherwise uses '/discover'.
+  /// Fetches a list of content with a 30-second timeout
   Future<List<Movie>> fetchMovie(String type, Map<String, String> params) async {
     final bool isSearch = params.containsKey('query') && params['query']!.isNotEmpty;
     final String endpoint = isSearch ? 'search' : 'discover';
@@ -45,14 +47,20 @@ class MovieService {
       },
     );
 
-    final response = await http.get(uri);
-    
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final movieResponse = MovieWrapper.fromJson(data);
-      return movieResponse.movies;
-    } else {
-      throw Exception('${response.statusCode}: Failed to load movies');
+    try {
+      final response = await http.get(uri).timeout(
+        const Duration(seconds: 30),
+        onTimeout: () => throw TimeoutException('Connection timed out'),
+      );
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return MovieWrapper.fromJson(data).movies;
+      } else {
+        throw Exception('Failed to fetch data');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }
