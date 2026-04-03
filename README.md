@@ -6,12 +6,12 @@ Noir Movie App is an innovative application designed to provide users access to 
 <h2>Screenshots</h2>
 
 <div style="display: flex; gap: 10px; flex-wrap: wrap; justify-content: center;">
-  <img src="assets/screenshots/homescreen.png" width="300" alt="Home Screen" />
-  <img src="assets/screenshots/moviescreen.png" width="300" alt="Movie Screen" />
-  <img src="assets/screenshots/tvscreen.png" width="300" alt="TV Screen" />
-  <img src="assets/screenshots/watchlistscreen.png" width="300" alt="Watchlist Screen" />
-  <img src="assets/screenshots/searchscreen.png" width="300" alt="Search Screen" />
-  <img src="assets/screenshots/settingsscreen.png" width="300" alt="Settings Screen" />
+  <img src="assets/screenshots/homescreen.png" width="150" alt="Home Screen" />
+  <img src="assets/screenshots/moviescreen.png" width="150" alt="Movie Screen" />
+  <img src="assets/screenshots/tvscreen.png" width="150" alt="TV Screen" />
+  <img src="assets/screenshots/watchlistscreen.png" width="150" alt="Watchlist Screen" />
+  <img src="assets/screenshots/searchscreen.png" width="150" alt="Search Screen" />
+  <img src="assets/screenshots/settingscreen.png" width="150" alt="Settings Screen" />
 </div>
 
 
